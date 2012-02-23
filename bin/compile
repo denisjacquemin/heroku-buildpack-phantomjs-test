@@ -4,13 +4,16 @@ indent() {
   sed -u 's/^/       /'
 }
 
-echo "-----> Found a hello.txt"
+PHANTOM_VERSION="1.4.1"
+PHANTOM_PACKAGE="http://code.google.com/p/phantomjs/downloads/detail?name=phantomjs-1.4.1-linux-x86-dynamic.tar.gz"
 
-# if hello.txt is empty, abort the build
-if [ ! -s $1/hello.txt ]; then
-  echo "hello.txt was empty" | indent
-  exit 1
-fi
+echo "-----> Vendoring PhantomJS 1.4"
 
-# replace hello with goodbye in a new file
-cat $1/hello.txt | sed -e "s/[Hh]ello/Goodbye/g" > $1/goodbye.txt
+VENDORED_PHANTOM="$BUILD_DIR/vendor/phantom"
+
+mkdir -p $VENDORED_PHANTOM  && curl $PHANTOM_PACKAGE -s -o -  | tar xzf - -C $VENDORED_PHANTOM
+
+# Set up so we can use PhantomJS right away
+export PATH="$VENDORED_PHANTOM/bin:$PATH"
+
+echo "Using PhantomJS $PHANTOM_VERSION" | indent
